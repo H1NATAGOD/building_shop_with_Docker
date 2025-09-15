@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест кнопок</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .btn {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Тест кнопок</h1>
+    
+    <div class="test-section">
+        <h2>Тест 1: Простые кнопки</h2>
+        <button class="btn" onclick="testButton1()">Тест кнопка 1</button>
+        <button class="btn" onclick="testButton2()">Тест кнопка 2</button>
+        <button class="btn" onclick="openTestModal()">Открыть модальное окно</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Тест 2: API запросы</h2>
+        <button class="btn" onclick="testAPI()">Тест API</button>
+        <button class="btn" onclick="testProducts()">Загрузить товары</button>
+    </div>
+
+    <div class="test-section">
+        <h2>Результаты тестов</h2>
+        <div id="testResults"></div>
+    </div>
+
+    <!-- Тестовое модальное окно -->
+    <div id="testModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTestModal()">&times;</span>
+            <h2>Тестовое модальное окно</h2>
+            <p>Если вы видите это окно, значит модальные окна работают!</p>
+            <button class="btn" onclick="closeTestModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        
+        function log(message) {
+            const results = document.getElementById('testResults');
+            const div = document.createElement('div');
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}:</strong> ${message}`;
+            results.appendChild(div);
+            console.log(message);
+        }
+
+        function testButton1() {
+            log('✅ Кнопка 1 работает!');
+        }
+
+        function testButton2() {
+            log('✅ Кнопка 2 работает!');
+        }
+
+        function openTestModal() {
+            log('🔄 Открываем модальное окно...');
+            document.getElementById('testModal').style.display = 'block';
+            log('✅ Модальное окно открыто!');
+        }
+
+        function closeTestModal() {
+            log('🔄 Закрываем модальное окно...');
+            document.getElementById('testModal').style.display = 'none';
+            log('✅ Модальное окно закрыто!');
+        }
+
+        async function testAPI() {
+            log('🔄 Тестируем API...');
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                const data = await response.json();
+                log(`✅ API работает! Получено ${data.products ? data.products.length : 0} товаров`);
+            } catch (error) {
+                log(`❌ Ошибка API: ${error.message}`);
+            }
+        }
+
+        async function testProducts() {
+            log('🔄 Загружаем товары...');
+            try {
+                const response = await fetch(`${API_BASE}/products`);
+                const data = await response.json();
+                
+                if (data.products && data.products.length > 0) {
+                    log(`✅ Товары загружены: ${data.products.length} шт.`);
+                    data.products.slice(0, 3).forEach((product, index) => {
+                        log(`   ${index + 1}. ${product.name} - ${product.price} ₽`);
+                    });
+                } else {
+                    log('⚠️ Товары не найдены');
+                }
+            } catch (error) {
+                log(`❌ Ошибка загрузки товаров: ${error.message}`);
+            }
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 Страница загружена, JavaScript работает!');
+            log(`🌐 API_BASE: ${API_BASE}`);
+        });
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('testModal');
+            if (event.target === modal) {
+                closeTestModal();
+            }
+        }
+    </script>
+</body>
+</html>
